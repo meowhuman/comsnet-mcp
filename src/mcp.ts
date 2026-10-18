@@ -80,6 +80,13 @@ const providerLabel =
 	provider;
 const purpose = args.purpose ?? `Interactive ${providerLabel} (ComsNet MCP)`;
 const cwd = args.cwd ? path.resolve(args.cwd) : process.cwd();
+// Explicit hub endpoint (args/env) wins over ~/.pi/coms-net file discovery, so a
+// machine that never ran the Pi hub layout can still attach. Same convention as
+// headless-peer.ts; the token is required whenever the URL is given.
+const overrideUrl =
+	typeof args["server-url"] === "string" ? args["server-url"] : process.env.PI_COMS_NET_SERVER_URL;
+const overrideToken =
+	typeof args["auth-token"] === "string" ? args["auth-token"] : process.env.PI_COMS_NET_AUTH_TOKEN;
 const herdrStatePath = path.join(
 	cwd, ".pi", "agents", "squads", "_runtime", "herdr-squads", `${project}.json`,
 );
@@ -843,6 +850,9 @@ export function handleOutboundResponse(data: {
 
 let client = createComsNetClient({
 	project, name, model, purpose, provider, cwd, explicit: false,
+	...(overrideUrl && overrideToken
+		? { endpoint: { serverUrl: overrideUrl.replace(/\/+$/, ""), token: overrideToken } }
+		: {}),
 	getContextPct: currentCtxPct,
 	getQueueDepth: () => inbox.filter((m) => !m.answered).length,
 	getActivity: () => currentActivity,

@@ -37,6 +37,28 @@ instead of an island.
 Early. The bridge is in daily use on a private fleet; this repository is the
 extracted, dependency-free public cut. No npm package yet — run from source.
 
+## What you need
+
+Two pieces, and this repository is only the second one:
+
+1. **A coms-net hub** — the upstream server (`scripts/coms-net-server.ts` in
+   [disler/pi-vs-claude-code](https://github.com/disler/pi-vs-claude-code)). It
+   owns the message store and hands out `server.json` + a token.
+2. **This bridge** — the MCP side.
+
+If you never ran the Pi toolchain, you do not need it: start the hub, then point
+the bridge at it explicitly instead of relying on discovery:
+
+```bash
+claude mcp add comsnet -- bun /path/to/comsnet-mcp/src/mcp.ts \
+  --server-url http://127.0.0.1:<hub-port> --auth-token <token-from-hub>
+```
+
+Your CLI also has to be able to host an MCP server. Claude Code, Codex, Cursor,
+Zed and Windsurf can; a plain shell script cannot — for those, run
+`src/headless-peer.ts` as a worker process instead, or talk to the hub's HTTP API
+directly.
+
 ## Quick start
 
 You need a coms-net **hub** running for the project you want to join (that is
@@ -63,7 +85,8 @@ claude mcp add comsnet -- bun /path/to/comsnet-mcp/src/mcp.ts
 | `--name` / `PI_COMS_AGENT_NAME` | `claude` | peer name others address |
 | `--model` / `PI_COMS_AGENT_MODEL` | `sonnet` | reported model label |
 | `--provider` | `claude-code` | agent kind tag for monitors |
-| `PI_COMS_NET_AUTH_TOKEN` | — | hub token when discovery is not used |
+| `--server-url` / `PI_COMS_NET_SERVER_URL` | discovered | hub URL when you have no `~/.pi/coms-net` layout |
+| `--auth-token` / `PI_COMS_NET_AUTH_TOKEN` | discovered | hub token; required whenever the URL is set |
 | `COMSNET_SHAPE_LOG` | `$TMPDIR/comsnet-output-shape.jsonl` | reply-shape guard log |
 
 ## Connecting a client
