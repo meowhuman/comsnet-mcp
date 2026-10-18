@@ -17,7 +17,7 @@ import * as path from "node:path";
 import { spawn } from "node:child_process";
 import { createComsNetClient, discoverHub, type HubEndpoint, type PromptEvent } from "./lib/coms-net-client";
 
-const DEFAULT_PROJECT = process.env.PI_COMS_NET_PROJECT ?? "Pi-custom-agents";
+const DEFAULT_PROJECT = process.env.PI_COMS_NET_PROJECT ?? "default";
 const AGENT_TIMEOUT_MS = Number(
 	process.env.COMS_PEER_TIMEOUT_MS ?? process.env.CC_COMS_TIMEOUT_MS ?? 1_800_000,
 );

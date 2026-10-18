@@ -27,6 +27,11 @@ coms-net already solves that for Pi. This bridge makes the same hub reachable
 from any MCP client, so a Claude Code session becomes an addressable peer
 instead of an island.
 
+> **Built on coms-net by [IndyDevDan](https://github.com/disler/pi-vs-claude-code) (MIT).**
+> The hub, its protocol and the Pi client are his work; this repository is the
+> MCP-side bridge, written independently against the same wire protocol.
+> See [`NOTICE`](NOTICE) for the full lineage.
+
 ## Status
 
 Early. The bridge is in daily use on a private fleet; this repository is the
@@ -34,14 +39,32 @@ extracted, dependency-free public cut. No npm package yet — run from source.
 
 ## Quick start
 
-```bash
-# 1. have a coms-net hub running (see upstream repo)
-# 2. give the bridge a hub endpoint
-export COMS_NET_HUB=http://127.0.0.1:8787      # or let it read ~/.pi/coms-net/server.json
+You need a coms-net **hub** running for the project you want to join (that is
+the upstream repository — this repo ships only the MCP side).
 
-# 3. register the server with your MCP client, e.g. Claude Code
+```bash
+# 1. who am I, and which hub project am I joining?
+export PI_COMS_NET_PROJECT=default        # default: "default"
+export PI_COMS_AGENT_NAME=claude-code     # the name peers address you by
+# optional: PI_COMS_AGENT_MODEL, PI_COMS_NET_AUTH_TOKEN
+
+# 2. hub discovery is automatic: the bridge reads
+#    ~/.pi/coms-net/projects/<project>/{server.json,server.secret.json}
+#    (a restarted hub rewrites the port there and the client follows it)
+
+# 3. register the server with your MCP client — example for Claude Code
 claude mcp add comsnet -- bun /path/to/comsnet-mcp/src/mcp.ts
+#    any MCP stdio client works; server name and args are up to you
 ```
+
+| flag / env | default | meaning |
+|---|---|---|
+| `--project` / `PI_COMS_NET_PROJECT` | `default` | hub project directory to join |
+| `--name` / `PI_COMS_AGENT_NAME` | `claude` | peer name others address |
+| `--model` / `PI_COMS_AGENT_MODEL` | `sonnet` | reported model label |
+| `--provider` | `claude-code` | agent kind tag for monitors |
+| `PI_COMS_NET_AUTH_TOKEN` | — | hub token when discovery is not used |
+| `COMSNET_SHAPE_LOG` | `$TMPDIR/comsnet-output-shape.jsonl` | reply-shape guard log |
 
 Then, inside the session:
 
@@ -68,11 +91,12 @@ polling — see `src/lib/coms-net-client.ts` for the SSE stream that powers it.
 Two mechanisms are on by default because unbounded agent-to-agent chatter is a
 real failure mode we hit:
 
-- **hop limit** — forwarded messages carry a hop counter; past the limit the
-  hub refuses to keep relaying (`PI_COMS_NET_MAX_HOPS`, default 5).
+- **hop ceiling** — forwarded conversations carry a hop counter. The **hub** is
+  the enforcement point (upstream `PI_COMS_NET_MAX_HOPS`, default 5); this
+  bridge carries the count and does not raise it. Set it on the hub, not here.
 - **reply shape guard** (`src/lib/output-shape.ts`) — a peer reply that is
-  structured but ends on a non-conclusion section is flagged, so a fleet
-  doesn't drown in "here is my analysis, thoughts?" turns.
+  structured but ends on a non-conclusion section is *logged*, never blocked
+  (heuristics misjudge; a human must be able to see and fix the rule).
 
 ## Repo layout
 

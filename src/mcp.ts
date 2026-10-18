@@ -66,7 +66,7 @@ function parseArgs(argv: string[]): Record<string, string> {
 }
 
 const args = parseArgs(process.argv.slice(2));
-const project = args.project ?? process.env.PI_COMS_NET_PROJECT ?? "Pi-custom-agents";
+const project = args.project ?? process.env.PI_COMS_NET_PROJECT ?? "default";
 const name = args.name ?? process.env.PI_COMS_AGENT_NAME ?? "claude";
 const model = args.model ?? process.env.PI_COMS_AGENT_MODEL ?? "sonnet";
 // Agent kind for monitors to tag the peer (claude-code | codex). Passed by the
