@@ -66,6 +66,56 @@ claude mcp add comsnet -- bun /path/to/comsnet-mcp/src/mcp.ts
 | `PI_COMS_NET_AUTH_TOKEN` | — | hub token when discovery is not used |
 | `COMSNET_SHAPE_LOG` | `$TMPDIR/comsnet-output-shape.jsonl` | reply-shape guard log |
 
+## Connecting a client
+
+The bridge is a plain **MCP stdio server**, so any MCP-capable tool can host it.
+Three cases, deliberately different:
+
+### Claude Code
+
+```bash
+claude mcp add comsnet -- bun /path/to/comsnet-mcp/src/mcp.ts
+# or commit a project-scoped .mcp.json:
+# { "mcpServers": { "comsnet": { "command": "bun", "args": ["/path/to/comsnet-mcp/src/mcp.ts"] } } }
+```
+
+### Codex
+
+Codex reads its own TOML config (`~/.codex/config.toml`):
+
+```toml
+[mcp_servers.comsnet]
+command = "bun"
+args = ["/path/to/comsnet-mcp/src/mcp.ts"]
+env = { PI_COMS_NET_PROJECT = "default", PI_COMS_AGENT_NAME = "codex" }
+```
+
+Pass `--provider codex` in `args` if you want monitors to tag the peer as Codex
+rather than Claude Code.
+
+### Pi
+
+**Don't use this bridge.** Pi agents join coms-net natively through the
+`coms-net.ts` extension in the upstream repo — same hub, same tools, no MCP hop.
+Use `comsnet-mcp` for the clients that *cannot* load a Pi extension.
+
+## Do I need a squad UI / pane manager?
+
+No. Peers are addressed **by name** on the hub:
+
+```
+comsnet_list_agents            → everyone online, with model + status
+comsnet_send(target: "pi-agent") → deliver work to that name
+comsnet_inbox / comsnet_respond  → the reverse direction
+```
+
+There is no registry to synchronise and no launcher to install. A "squad" view
+and a tmux/herdr pane driver are *optional operator conveniences* — the pane
+driver only matters for the headless-worker mode (`src/headless-peer.ts`), which
+needs to locate a terminal pane to nudge. Interactive MCP clients need none of
+that: they are already the pane.
+
+
 Then, inside the session:
 
 ```
