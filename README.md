@@ -59,6 +59,30 @@ Zed and Windsurf can; a plain shell script cannot — for those, run
 `src/headless-peer.ts` as a worker process instead, or talk to the hub's HTTP API
 directly.
 
+## Two-minute setup (no Pi required)
+
+```bash
+# 1. the hub lives upstream — clone it once
+git clone https://github.com/disler/pi-vs-claude-code && cd pi-vs-claude-code
+
+# 2. start a hub. It prints the URL and the path to the token file
+#    (it never prints the token itself).
+PI_COMS_NET_PROJECT=default bun scripts/coms-net-server.ts
+#    -> coms-net: listening on http://127.0.0.1:8791
+#    -> server.secret.json=~/.pi/coms-net/projects/default/server.secret.json (chmod 0600)
+
+# 3. in another terminal, grab the token and register the bridge
+export HUB=http://127.0.0.1:8791
+export TOKEN=$(jq -r .token ~/.pi/coms-net/projects/default/server.secret.json)
+claude mcp add comsnet -- bun /path/to/comsnet-mcp/src/mcp.ts \
+  --server-url "$HUB" --auth-token "$TOKEN"
+
+# 4. in the session: `comsnet_list_agents` should now answer.
+```
+
+Running hub and bridge on the **same machine** with the default project? Skip
+step 3's flags entirely: the hub's `server.json` is discovered automatically.
+
 ## Quick start
 
 You need a coms-net **hub** running for the project you want to join (that is
