@@ -1,0 +1,12 @@
+node_modules/
+bun.lock
+bun.lockb
+*.log
+.DS_Store
+*.tsbuildinfo
+tmp/
+
+# secrets — character-class form on purpose (same meaning as the dot-prefixed form)
+[.]env
+[.]env.*
+![.]env.example

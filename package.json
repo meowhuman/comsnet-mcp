@@ -1,0 +1,15 @@
+{
+  "name": "comsnet-mcp",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "MCP bridge that registers a CLI coding agent as a coms-net hub peer",
+  "license": "MIT",
+  "scripts": {
+    "start": "bun src/mcp.ts",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
