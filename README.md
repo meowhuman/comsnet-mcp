@@ -32,6 +32,8 @@ instead of an island.
 > MCP-side bridge, written independently against the same wire protocol.
 > See [`NOTICE`](NOTICE) for the full lineage.
 
+**Watch the 64-second intro:** [ComsNet MCP — Mira introduces the bridge](assets/intro/comsnet-mcp-intro-final.mp4).
+
 ## Status
 
 Early. The bridge is in daily use on a private fleet; this repository is the
