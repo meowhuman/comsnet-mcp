@@ -1,15 +1,39 @@
 {
   "name": "comsnet-mcp",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.1.0",
   "type": "module",
-  "description": "MCP bridge that registers a CLI coding agent as a coms-net hub peer",
+  "description": "MCP bridge that registers a CLI coding agent (Claude Code, Codex, Cursor) as a peer on a coms-net agent hub",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meowhuman/comsnet-mcp.git"
+  },
+  "homepage": "https://github.com/meowhuman/comsnet-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/meowhuman/comsnet-mcp/issues"
+  },
+  "keywords": [
+    "ai-agents",
+    "claude-code",
+    "mcp",
+    "model-context-protocol",
+    "multi-agent"
+  ],
+  "bin": {
+    "comsnet-mcp": "src/mcp.ts"
+  },
+  "files": [
+    "src",
+    "NOTICE"
+  ],
+  "engines": {
+    "bun": ">=1.2.0"
+  },
   "scripts": {
     "start": "bun src/mcp.ts",
     "test": "bun test"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "1.4.3"
   }
 }

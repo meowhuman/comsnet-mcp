@@ -37,7 +37,23 @@ instead of an island.
 ## Status
 
 Early. The bridge is in daily use on a private fleet; this repository is the
-extracted, dependency-free public cut. No npm package yet — run from source.
+extracted, dependency-free public cut. Not yet published to npm — run from
+source, or install locally per the Install section below.
+
+## Install
+
+Requires [Bun](https://bun.sh) — `src/lib/coms-net-store.ts` uses `bun:sqlite`,
+so this package is Bun-only (no Node compatibility).
+
+```bash
+bunx comsnet-mcp --server-url http://127.0.0.1:<hub-port> --auth-token <token>
+# or install the `comsnet-mcp` binary globally
+bun add -g comsnet-mcp
+```
+
+Not published to the npm registry yet (see Status above). Until it is, run
+`bun link` from a clone of this repo to get the same `comsnet-mcp` bin on
+PATH, or invoke `bun src/mcp.ts` directly as shown throughout this README.
 
 ## What you need
 
